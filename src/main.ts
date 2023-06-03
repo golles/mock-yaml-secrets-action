@@ -1,16 +1,38 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {
+  appendSecret,
+  getFilesWithExtension,
+  findSecretsInFile
+} from './utils/files'
+import {readConfig} from './utils/config'
+import {applyRules} from './utils/rules'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const configFile: string = core.getInput('configFile')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const config = readConfig(configFile)
 
-    core.setOutput('time', new Date().toTimeString())
+    const files = getFilesWithExtension(
+      config.directory,
+      ['.yaml', '.yml'],
+      config.excludePaths
+    )
+
+    core.debug(`Found ${files.length} yaml files`)
+
+    const secrets: string[] = []
+    for (const file of files) {
+      secrets.push(...findSecretsInFile(file))
+    }
+
+    core.debug(`Found ${secrets.length} secrets`)
+
+    for (const secret of secrets) {
+      const value = applyRules(secret, config.rules, config.defaultValue)
+      core.debug(`Giving ${secret} value ${value}`)
+      appendSecret(config.secretFile, secret, value)
+    }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

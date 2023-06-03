@@ -1,0 +1,9 @@
+{
+  "directory": "./",
+  "excludePaths": [".git", ".github", ".vscode"],
+  "secretFile": "secrets.yaml",
+  "defaultValue": "value0123",
+  "rules": {
+    "foo": "bar"
+  }
+}

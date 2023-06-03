@@ -1,0 +1,14 @@
+encryption_key: !secret encryption_key
+
+services:
+  - service: external
+    name: host1
+    ip: !secret host1_ip
+    user: !secret host1_user
+    password: !secret host1_password
+
+  - service: external
+    name: host2
+    ip: !secret host2_ip
+    user: !secret host2_user
+    password: !secret host2_password

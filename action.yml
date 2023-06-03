@@ -1,11 +1,10 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'mock-yaml-secrets-action'
+description: 'Scan all yaml files for secrets and make a mock file for testing'
+author: 'golles'
 inputs:
-  milliseconds: # change this
+  configFile:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'config file location'
 runs:
   using: 'node16'
   main: 'dist/index.js'

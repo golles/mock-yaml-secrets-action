@@ -40,16 +40,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
-const wait_1 = __nccwpck_require__(817);
+const files_1 = __nccwpck_require__(658);
+const config_1 = __nccwpck_require__(352);
+const rules_1 = __nccwpck_require__(239);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const ms = core.getInput('milliseconds');
-            core.debug(`Waiting ${ms} milliseconds ...`); // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-            core.debug(new Date().toTimeString());
-            yield (0, wait_1.wait)(parseInt(ms, 10));
-            core.debug(new Date().toTimeString());
-            core.setOutput('time', new Date().toTimeString());
+            const configFile = core.getInput('configFile');
+            const config = (0, config_1.readConfig)(configFile);
+            const files = (0, files_1.getFilesWithExtension)(config.directory, ['.yaml', '.yml'], config.excludePaths);
+            core.debug(`Found ${files.length} yaml files`);
+            const secrets = [];
+            for (const file of files) {
+                secrets.push(...(0, files_1.findSecretsInFile)(file));
+            }
+            core.debug(`Found ${secrets.length} secrets`);
+            for (const secret of secrets) {
+                const value = (0, rules_1.applyRules)(secret, config.rules, config.defaultValue);
+                core.debug(`Giving ${secret} value ${value}`);
+                (0, files_1.appendSecret)(config.secretFile, secret, value);
+            }
         }
         catch (error) {
             if (error instanceof Error)
@@ -62,33 +72,116 @@ run();
 
 /***/ }),
 
-/***/ 817:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ 352:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
-function wait(milliseconds) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
-            if (isNaN(milliseconds)) {
-                throw new Error('milliseconds not a number');
+exports.readConfig = exports.defaultConfig = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(147));
+exports.defaultConfig = {
+    directory: './',
+    excludePaths: [],
+    secretFile: 'secrets.yaml',
+    defaultValue: 'value0123',
+    rules: {}
+};
+const readConfig = (file) => {
+    const jsonString = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    const jsonObject = JSON.parse(jsonString);
+    return Object.assign(Object.assign({}, exports.defaultConfig), jsonObject);
+};
+exports.readConfig = readConfig;
+
+
+/***/ }),
+
+/***/ 658:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getFileExtension = exports.appendSecret = exports.findSecretsInFile = exports.shouldExclude = exports.getFilesWithExtension = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(147));
+const path_1 = __importDefault(__nccwpck_require__(17));
+const getFilesWithExtension = (directory, extension, excludePaths) => {
+    const files = [];
+    const getFiles = (dir, ext) => {
+        const filesInDirectory = fs_1.default.readdirSync(dir);
+        for (const file of filesInDirectory) {
+            const absolute = path_1.default.join(dir, file);
+            if ((0, exports.shouldExclude)(absolute, excludePaths)) {
+                continue;
             }
-            setTimeout(() => resolve('done!'), milliseconds);
-        });
-    });
-}
-exports.wait = wait;
+            if (fs_1.default.statSync(absolute).isDirectory()) {
+                getFiles(absolute, ext);
+            }
+            else {
+                if (ext.includes((0, exports.getFileExtension)(absolute))) {
+                    files.push(absolute);
+                }
+            }
+        }
+    };
+    getFiles(directory, extension);
+    return files;
+};
+exports.getFilesWithExtension = getFilesWithExtension;
+const shouldExclude = (file, excludes) => {
+    for (const exclude of excludes) {
+        if (file.endsWith(exclude)) {
+            return true;
+        }
+    }
+    return false;
+};
+exports.shouldExclude = shouldExclude;
+const findSecretsInFile = (file) => {
+    const content = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    const secrets = [];
+    for (const match of content.matchAll(/!secret (\w*)/gm)) {
+        secrets.push(match[1]);
+    }
+    return secrets;
+};
+exports.findSecretsInFile = findSecretsInFile;
+const appendSecret = (file, key, value) => {
+    fs_1.default.appendFileSync(file, `${key}: '${value}'\n`, 'utf-8');
+};
+exports.appendSecret = appendSecret;
+const getFileExtension = (file) => {
+    return path_1.default.extname(file);
+};
+exports.getFileExtension = getFileExtension;
+
+
+/***/ }),
+
+/***/ 239:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.applyRules = void 0;
+const applyRules = (secret, rules, defaultValue) => {
+    for (const [rule, value] of Object.entries(rules)) {
+        const regex = new RegExp(rule);
+        if (regex.test(secret)) {
+            return value;
+        }
+    }
+    return defaultValue;
+};
+exports.applyRules = applyRules;
 
 
 /***/ }),
@@ -1818,6 +1911,10 @@ function checkBypass(reqUrl) {
     if (!reqUrl.hostname) {
         return false;
     }
+    const reqHost = reqUrl.hostname;
+    if (isLoopbackAddress(reqHost)) {
+        return true;
+    }
     const noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || '';
     if (!noProxy) {
         return false;
@@ -1843,13 +1940,24 @@ function checkBypass(reqUrl) {
         .split(',')
         .map(x => x.trim().toUpperCase())
         .filter(x => x)) {
-        if (upperReqHosts.some(x => x === upperNoProxyItem)) {
+        if (upperNoProxyItem === '*' ||
+            upperReqHosts.some(x => x === upperNoProxyItem ||
+                x.endsWith(`.${upperNoProxyItem}`) ||
+                (upperNoProxyItem.startsWith('.') &&
+                    x.endsWith(`${upperNoProxyItem}`)))) {
             return true;
         }
     }
     return false;
 }
 exports.checkBypass = checkBypass;
+function isLoopbackAddress(host) {
+    const hostLower = host.toLowerCase();
+    return (hostLower === 'localhost' ||
+        hostLower.startsWith('127.') ||
+        hostLower.startsWith('[::1]') ||
+        hostLower.startsWith('[0:0:0:0:0:0:0:1]'));
+}
 //# sourceMappingURL=proxy.js.map
 
 /***/ }),
