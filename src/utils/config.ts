@@ -20,7 +20,7 @@ export const defaultConfig: Config = {
 }
 
 /**
- * Read condig from a JSON file.
+ * Read config from a JSON file.
  *
  * @param file the json file, holding the config.
  * @returns config object
