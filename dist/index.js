@@ -43,6 +43,9 @@ const core = __importStar(__nccwpck_require__(186));
 const files_1 = __nccwpck_require__(658);
 const config_1 = __nccwpck_require__(352);
 const rules_1 = __nccwpck_require__(239);
+/**
+ * Main entry point.
+ */
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -83,6 +86,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.readConfig = exports.defaultConfig = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(147));
+/**
+ * Default config object.
+ */
 exports.defaultConfig = {
     directory: './',
     excludePaths: [],
@@ -90,6 +96,12 @@ exports.defaultConfig = {
     defaultValue: 'value0123',
     rules: {}
 };
+/**
+ * Read condig from a JSON file.
+ *
+ * @param file the json file, holding the config.
+ * @returns config object
+ */
 const readConfig = (file) => {
     const jsonString = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     const jsonObject = JSON.parse(jsonString);
@@ -112,8 +124,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getFileExtension = exports.appendSecret = exports.findSecretsInFile = exports.shouldExclude = exports.getFilesWithExtension = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(147));
 const path_1 = __importDefault(__nccwpck_require__(17));
+/**
+ * Get all the files recursicly with a given extensions.
+ *
+ * @param directory the root directory to start the search from.
+ * @param extension the extension the files should have.
+ * @param excludePaths paths that should be excluded.
+ * @returns list of file names that match all criteria.
+ */
 const getFilesWithExtension = (directory, extension, excludePaths) => {
     const files = [];
+    /**
+     * Inner function to do the actual file scanning.
+     *
+     * @param dir the root directory to start the search from.
+     * @param ext the extension the files should have.
+     */
     const getFiles = (dir, ext) => {
         const filesInDirectory = fs_1.default.readdirSync(dir);
         for (const file of filesInDirectory) {
@@ -135,6 +161,13 @@ const getFilesWithExtension = (directory, extension, excludePaths) => {
     return files;
 };
 exports.getFilesWithExtension = getFilesWithExtension;
+/**
+ * Check if a file should be excluded based on the exclude rules.
+ *
+ * @param file the filename.
+ * @param excludes list with exclude rules.
+ * @returns true/false based if the file should be excluded or not.
+ */
 const shouldExclude = (file, excludes) => {
     for (const exclude of excludes) {
         if (file.endsWith(exclude)) {
@@ -144,6 +177,12 @@ const shouldExclude = (file, excludes) => {
     return false;
 };
 exports.shouldExclude = shouldExclude;
+/**
+ * Find all secrets in a given file.
+ *
+ * @param file the file to search for secrets.
+ * @returns a list of secrets.
+ */
 const findSecretsInFile = (file) => {
     const content = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     const secrets = [];
@@ -153,10 +192,23 @@ const findSecretsInFile = (file) => {
     return secrets;
 };
 exports.findSecretsInFile = findSecretsInFile;
+/**
+ * Append a secret and it's value to a given file.
+ *
+ * @param file the file for secrets.
+ * @param key the key, the name of the secret.
+ * @param value the value of the secret.
+ */
 const appendSecret = (file, key, value) => {
     fs_1.default.appendFileSync(file, `${key}: '${value}'\n`, 'utf-8');
 };
 exports.appendSecret = appendSecret;
+/**
+ * Get the file extension from a given filename/path.
+ *
+ * @param file the file.
+ * @returns the extension including a leading period.
+ */
 const getFileExtension = (file) => {
     return path_1.default.extname(file);
 };
@@ -172,6 +224,14 @@ exports.getFileExtension = getFileExtension;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.applyRules = void 0;
+/**
+ * Apply rules on a given secret.
+ *
+ * @param secret The secret.
+ * @param rules The list of rules, the first rule that macthes will be applied.
+ * @param defaultValue a default value, in case no rule is applicable.
+ * @returns a value for the given secret.
+ */
 const applyRules = (secret, rules, defaultValue) => {
     for (const [rule, value] of Object.entries(rules)) {
         const regex = new RegExp(rule);

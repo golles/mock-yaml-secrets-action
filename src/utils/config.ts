@@ -8,6 +8,9 @@ interface Config {
   rules: Object
 }
 
+/**
+ * Default config object.
+ */
 export const defaultConfig: Config = {
   directory: './',
   excludePaths: [],
@@ -16,6 +19,12 @@ export const defaultConfig: Config = {
   rules: {}
 }
 
+/**
+ * Read condig from a JSON file.
+ *
+ * @param file the json file, holding the config.
+ * @returns config object
+ */
 export const readConfig = (file: string): Config => {
   const jsonString = fs.readFileSync(file, {encoding: 'utf8', flag: 'r'})
   const jsonObject = JSON.parse(jsonString)

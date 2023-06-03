@@ -7,6 +7,9 @@ import {
 import {readConfig} from './utils/config'
 import {applyRules} from './utils/rules'
 
+/**
+ * Main entry point.
+ */
 async function run(): Promise<void> {
   try {
     const configFile: string = core.getInput('configFile')
