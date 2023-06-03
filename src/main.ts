@@ -21,12 +21,12 @@ async function run(): Promise<void> {
 
     core.debug(`Found ${files.length} yaml files`)
 
-    const secrets: string[] = []
+    let secrets: Set<string> = new Set()
     for (const file of files) {
-      secrets.push(...findSecretsInFile(file))
+      secrets = new Set([...secrets, ...findSecretsInFile(file)])
     }
 
-    core.debug(`Found ${secrets.length} secrets`)
+    core.debug(`Found ${secrets.size} secrets`)
 
     for (const secret of secrets) {
       const value = applyRules(secret, config.rules, config.defaultValue)

@@ -50,11 +50,11 @@ function run() {
             const config = (0, config_1.readConfig)(configFile);
             const files = (0, files_1.getFilesWithExtension)(config.directory, ['.yaml', '.yml'], config.excludePaths);
             core.debug(`Found ${files.length} yaml files`);
-            const secrets = [];
+            let secrets = new Set();
             for (const file of files) {
-                secrets.push(...(0, files_1.findSecretsInFile)(file));
+                secrets = new Set([...secrets, ...(0, files_1.findSecretsInFile)(file)]);
             }
-            core.debug(`Found ${secrets.length} secrets`);
+            core.debug(`Found ${secrets.size} secrets`);
             for (const secret of secrets) {
                 const value = (0, rules_1.applyRules)(secret, config.rules, config.defaultValue);
                 core.debug(`Giving ${secret} value ${value}`);
