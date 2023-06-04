@@ -69,6 +69,10 @@ A regular expression should be used as the key, the value will be used as a secr
 
 ```json
 {
+  "directory": "./",
+  "excludePaths": [".github", ".vscode"],
+  "secretFile": "secrets.yaml",
+  "defaultValue": "secret",
   "rules": {
     ".*_ip": "10.0.0.12",
     ".*_mac": "00:00:00:00:00:00",
