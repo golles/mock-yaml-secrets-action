@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest an enhancement for this action.
+labels: [enhancement]
+body:
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The request
+      description: >-
+        Describe your feature request here to communicate to the
+        maintainers. Tell us what you were trying to do and why.
+
+        Provide a clear and concise description of what the feature request is. What would you like to happen?
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
