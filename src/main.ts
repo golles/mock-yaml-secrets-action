@@ -8,12 +8,16 @@ import {readConfig} from './utils/config'
 import {applyRules} from './utils/rules'
 
 /**
- * Main entry point.
+ * Action run function.
  */
 async function run(): Promise<void> {
   try {
-    const configFile: string = core.getInput('configFile')
+    core.debug(
+      `Starting ${process.env.npm_package_name} version ${process.env.npm_package_version}`
+    )
 
+    const configFile: string = core.getInput('configFile')
+    core.debug(`Attempting to read config file: ${configFile}`)
     const config = readConfig(configFile)
 
     const files = getFilesWithExtension(
@@ -41,4 +45,7 @@ async function run(): Promise<void> {
   }
 }
 
+/**
+ * Main entry point.
+ */
 run()

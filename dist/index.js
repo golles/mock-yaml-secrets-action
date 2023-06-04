@@ -44,12 +44,14 @@ const files_1 = __nccwpck_require__(658);
 const config_1 = __nccwpck_require__(352);
 const rules_1 = __nccwpck_require__(239);
 /**
- * Main entry point.
+ * Action run function.
  */
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.debug(`Starting ${process.env.npm_package_name} version ${process.env.npm_package_version}`);
             const configFile = core.getInput('configFile');
+            core.debug(`Attempting to read config file: ${configFile}`);
             const config = (0, config_1.readConfig)(configFile);
             const files = (0, files_1.getFilesWithExtension)(config.directory, ['.yaml', '.yml'], config.excludePaths);
             core.debug(`Found ${files.length} yaml files`);
@@ -70,6 +72,9 @@ function run() {
         }
     });
 }
+/**
+ * Main entry point.
+ */
 run();
 
 
