@@ -1,5 +1,5 @@
-name: 'build-test'
-on: # rebuild any PRs and main branch changes
+name: CI
+on:
   pull_request:
   push:
     branches:
@@ -7,14 +7,18 @@ on: # rebuild any PRs and main branch changes
       - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: |
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Install
+        run: |
           npm install
 
-      - run: |
+      - name: Build, check and test
+        run: |
           npm run all
 
       - name: Upload coverage reports to Codecov
@@ -23,10 +27,13 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
 
-  test: # make sure the action works on a clean machine without building
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ./
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Test the action
+        uses: ./
         with:
           configFile: __tests__/data/config/all.json
