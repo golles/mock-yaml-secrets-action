@@ -20,5 +20,9 @@
   },
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "golles",
+    "projectKey": "golles_mock-yaml-secrets-action"
   }
 }

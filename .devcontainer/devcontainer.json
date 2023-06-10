@@ -7,7 +7,8 @@
       "extensions": [
         "esbenp.prettier-vscode",
         "github.vscode-pull-request-github",
-        "ryanluker.vscode-coverage-gutters"
+        "ryanluker.vscode-coverage-gutters",
+        "sonarSource.sonarlint-vscode"
       ],
       "settings": {
         "files.eol": "\n",
