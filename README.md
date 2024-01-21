@@ -102,7 +102,6 @@ Technical note: the regular expression is tested with `new RegExp(rule).test()`
 [codecov-shield]:
   https://img.shields.io/codecov/c/github/golles/mock-yaml-secrets-action?style=for-the-badge
 [commits]: https://github.com/golles/mock-yaml-secrets-action/commits/main
-[hacs]: https://github.com/hacs/integration
 [license-shield]:
   https://img.shields.io/github/license/golles/mock-yaml-secrets-action.svg?style=for-the-badge
 [maintainer]: https://github.com/golles
