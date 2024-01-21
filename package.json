@@ -1,7 +1,7 @@
 {
   "name": "mock-yaml-secrets-action",
   "description": "This action will scan all your YAML files for secrets and makes a secrets.yaml that can be used by other actions.",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "author": "golles",
   "private": true,
   "homepage": "https://github.com/golles/mock-yaml-secrets-action",
