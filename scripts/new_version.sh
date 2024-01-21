@@ -11,7 +11,6 @@ VERSION=$1
 if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     # Update the package version.
     npm version "$VERSION"
-    git tag -fa -m "" "v${VERSION}"
 
     read -p "Want to push(y/n)? " -n 1 -r
     echo
