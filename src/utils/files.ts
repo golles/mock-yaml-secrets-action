@@ -69,7 +69,7 @@ export const shouldExclude = (file: string, excludes: string[]): boolean => {
  * @returns a list of secrets.
  */
 export const findSecretsInFile = (file: string): string[] => {
-  const content = fs.readFileSync(file, {encoding: 'utf8', flag: 'r'})
+  const content = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' })
   const secrets: string[] = []
 
   for (const match of content.matchAll(/!secret (\w*)/gm)) {

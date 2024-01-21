@@ -4,13 +4,13 @@ import {
   getFilesWithExtension,
   findSecretsInFile
 } from './utils/files'
-import {readConfig} from './utils/config'
-import {applyRules} from './utils/rules'
+import { readConfig } from './utils/config'
+import { applyRules } from './utils/rules'
 
 /**
  * Action run function.
  */
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     core.debug(
       `Starting ${process.env.npm_package_name} version ${process.env.npm_package_version}`

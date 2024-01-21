@@ -8,7 +8,7 @@
  */
 export const applyRules = (
   secret: string,
-  rules: Object,
+  rules: object,
   defaultValue: string
 ): string => {
   for (const [rule, value] of Object.entries(rules)) {

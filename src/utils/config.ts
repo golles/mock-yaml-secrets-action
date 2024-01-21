@@ -5,7 +5,7 @@ interface Config {
   excludePaths: string[]
   secretFile: string
   defaultValue: string
-  rules: Object
+  rules: object
 }
 
 /**
@@ -26,7 +26,7 @@ export const defaultConfig: Config = {
  * @returns config object
  */
 export const readConfig = (file: string): Config => {
-  const jsonString = fs.readFileSync(file, {encoding: 'utf8', flag: 'r'})
+  const jsonString = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' })
   const jsonObject = JSON.parse(jsonString)
-  return {...defaultConfig, ...jsonObject}
+  return { ...defaultConfig, ...jsonObject }
 }
