@@ -1,255 +1,5 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
-
-/***/ 109:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(186));
-const files_1 = __nccwpck_require__(658);
-const config_1 = __nccwpck_require__(352);
-const rules_1 = __nccwpck_require__(239);
-/**
- * Action run function.
- */
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            core.debug(`Starting ${process.env.npm_package_name} version ${process.env.npm_package_version}`);
-            const configFile = core.getInput('configFile');
-            core.debug(`Attempting to read config file: ${configFile}`);
-            const config = (0, config_1.readConfig)(configFile);
-            const files = (0, files_1.getFilesWithExtension)(config.directory, ['.yaml', '.yml'], config.excludePaths);
-            core.debug(`Found ${files.length} yaml files`);
-            let secrets = new Set();
-            for (const file of files) {
-                secrets = new Set([...secrets, ...(0, files_1.findSecretsInFile)(file)]);
-            }
-            core.debug(`Found ${secrets.size} secrets`);
-            for (const secret of secrets) {
-                const value = (0, rules_1.applyRules)(secret, config.rules, config.defaultValue);
-                core.debug(`Giving ${secret} value ${value}`);
-                (0, files_1.appendSecret)(config.secretFile, secret, value);
-            }
-        }
-        catch (error) {
-            if (error instanceof Error)
-                core.setFailed(error.message);
-        }
-    });
-}
-/**
- * Main entry point.
- */
-run();
-
-
-/***/ }),
-
-/***/ 352:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.readConfig = exports.defaultConfig = void 0;
-const fs_1 = __importDefault(__nccwpck_require__(147));
-/**
- * Default config object.
- */
-exports.defaultConfig = {
-    directory: './',
-    excludePaths: [],
-    secretFile: 'secrets.yaml',
-    defaultValue: 'value0123',
-    rules: {}
-};
-/**
- * Read config from a JSON file.
- *
- * @param file the json file, holding the config.
- * @returns config object
- */
-const readConfig = (file) => {
-    const jsonString = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
-    const jsonObject = JSON.parse(jsonString);
-    return Object.assign(Object.assign({}, exports.defaultConfig), jsonObject);
-};
-exports.readConfig = readConfig;
-
-
-/***/ }),
-
-/***/ 658:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getFileExtension = exports.appendSecret = exports.findSecretsInFile = exports.shouldExclude = exports.getFilesWithExtension = void 0;
-const fs_1 = __importDefault(__nccwpck_require__(147));
-const path_1 = __importDefault(__nccwpck_require__(17));
-/**
- * Get all the files recursicly with a given extensions.
- *
- * @param directory the root directory to start the search from.
- * @param extension the extension the files should have.
- * @param excludePaths paths that should be excluded.
- * @returns list of file names that match all criteria.
- */
-const getFilesWithExtension = (directory, extension, excludePaths) => {
-    const files = [];
-    /**
-     * Inner function to do the actual file scanning.
-     *
-     * @param dir the root directory to start the search from.
-     * @param ext the extension the files should have.
-     */
-    const getFiles = (dir, ext) => {
-        const filesInDirectory = fs_1.default.readdirSync(dir);
-        for (const file of filesInDirectory) {
-            const absolute = path_1.default.join(dir, file);
-            if ((0, exports.shouldExclude)(absolute, excludePaths)) {
-                continue;
-            }
-            if (fs_1.default.statSync(absolute).isDirectory()) {
-                getFiles(absolute, ext);
-            }
-            else {
-                if (ext.includes((0, exports.getFileExtension)(absolute))) {
-                    files.push(absolute);
-                }
-            }
-        }
-    };
-    getFiles(directory, extension);
-    return files;
-};
-exports.getFilesWithExtension = getFilesWithExtension;
-/**
- * Check if a file should be excluded based on the exclude rules.
- *
- * @param file the filename.
- * @param excludes list with exclude rules.
- * @returns true/false based if the file should be excluded or not.
- */
-const shouldExclude = (file, excludes) => {
-    for (const exclude of excludes) {
-        if (file.endsWith(exclude)) {
-            return true;
-        }
-    }
-    return false;
-};
-exports.shouldExclude = shouldExclude;
-/**
- * Find all secrets in a given file.
- *
- * @param file the file to search for secrets.
- * @returns a list of secrets.
- */
-const findSecretsInFile = (file) => {
-    const content = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
-    const secrets = [];
-    for (const match of content.matchAll(/!secret (\w*)/gm)) {
-        secrets.push(match[1]);
-    }
-    return secrets;
-};
-exports.findSecretsInFile = findSecretsInFile;
-/**
- * Append a secret and it's value to a given file.
- *
- * @param file the file for secrets.
- * @param key the key, the name of the secret.
- * @param value the value of the secret.
- */
-const appendSecret = (file, key, value) => {
-    fs_1.default.appendFileSync(file, `${key}: '${value}'\n`, 'utf-8');
-};
-exports.appendSecret = appendSecret;
-/**
- * Get the file extension from a given filename/path.
- *
- * @param file the file.
- * @returns the extension including a leading period.
- */
-const getFileExtension = (file) => {
-    return path_1.default.extname(file);
-};
-exports.getFileExtension = getFileExtension;
-
-
-/***/ }),
-
-/***/ 239:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.applyRules = void 0;
-/**
- * Apply rules on a given secret.
- *
- * @param secret The secret.
- * @param rules The list of rules, the first rule that macthes will be applied.
- * @param defaultValue a default value, in case no rule is applicable.
- * @returns a value for the given secret.
- */
-const applyRules = (secret, rules, defaultValue) => {
-    for (const [rule, value] of Object.entries(rules)) {
-        const regex = new RegExp(rule);
-        if (regex.test(secret)) {
-            return value;
-        }
-    }
-    return defaultValue;
-};
-exports.applyRules = applyRules;
-
-
-/***/ }),
 
 /***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
@@ -808,7 +558,7 @@ class OidcClient {
                 .catch(error => {
                 throw new Error(`Failed to get ID Token. \n 
         Error Code : ${error.statusCode}\n 
-        Error Message: ${error.result.message}`);
+        Error Message: ${error.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
             if (!id_token) {
@@ -2953,6 +2703,247 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 399:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
+const core = __importStar(__nccwpck_require__(186));
+const files_1 = __nccwpck_require__(455);
+const config_1 = __nccwpck_require__(183);
+const rules_1 = __nccwpck_require__(985);
+/**
+ * Action run function.
+ */
+async function run() {
+    try {
+        core.debug(`Starting ${process.env.npm_package_name} version ${process.env.npm_package_version}`);
+        const configFile = core.getInput('configFile');
+        core.debug(`Attempting to read config file: ${configFile}`);
+        const config = (0, config_1.readConfig)(configFile);
+        const files = (0, files_1.getFilesWithExtension)(config.directory, ['.yaml', '.yml'], config.excludePaths);
+        core.debug(`Found ${files.length} yaml files`);
+        let secrets = new Set();
+        for (const file of files) {
+            secrets = new Set([...secrets, ...(0, files_1.findSecretsInFile)(file)]);
+        }
+        core.debug(`Found ${secrets.size} secrets`);
+        for (const secret of secrets) {
+            const value = (0, rules_1.applyRules)(secret, config.rules, config.defaultValue);
+            core.debug(`Giving ${secret} value ${value}`);
+            (0, files_1.appendSecret)(config.secretFile, secret, value);
+        }
+    }
+    catch (error) {
+        if (error instanceof Error)
+            core.setFailed(error.message);
+    }
+}
+exports.run = run;
+/**
+ * Main entry point.
+ */
+run();
+
+
+/***/ }),
+
+/***/ 183:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readConfig = exports.defaultConfig = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(147));
+/**
+ * Default config object.
+ */
+exports.defaultConfig = {
+    directory: './',
+    excludePaths: [],
+    secretFile: 'secrets.yaml',
+    defaultValue: 'value0123',
+    rules: {}
+};
+/**
+ * Read config from a JSON file.
+ *
+ * @param file the json file, holding the config.
+ * @returns config object
+ */
+const readConfig = (file) => {
+    const jsonString = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    const jsonObject = JSON.parse(jsonString);
+    return { ...exports.defaultConfig, ...jsonObject };
+};
+exports.readConfig = readConfig;
+
+
+/***/ }),
+
+/***/ 455:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getFileExtension = exports.appendSecret = exports.findSecretsInFile = exports.shouldExclude = exports.getFilesWithExtension = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(147));
+const path_1 = __importDefault(__nccwpck_require__(17));
+/**
+ * Get all the files recursicly with a given extensions.
+ *
+ * @param directory the root directory to start the search from.
+ * @param extension the extension the files should have.
+ * @param excludePaths paths that should be excluded.
+ * @returns list of file names that match all criteria.
+ */
+const getFilesWithExtension = (directory, extension, excludePaths) => {
+    const files = [];
+    /**
+     * Inner function to do the actual file scanning.
+     *
+     * @param dir the root directory to start the search from.
+     * @param ext the extension the files should have.
+     */
+    const getFiles = (dir, ext) => {
+        const filesInDirectory = fs_1.default.readdirSync(dir);
+        for (const file of filesInDirectory) {
+            const absolute = path_1.default.join(dir, file);
+            if ((0, exports.shouldExclude)(absolute, excludePaths)) {
+                continue;
+            }
+            if (fs_1.default.statSync(absolute).isDirectory()) {
+                getFiles(absolute, ext);
+            }
+            else {
+                if (ext.includes((0, exports.getFileExtension)(absolute))) {
+                    files.push(absolute);
+                }
+            }
+        }
+    };
+    getFiles(directory, extension);
+    return files;
+};
+exports.getFilesWithExtension = getFilesWithExtension;
+/**
+ * Check if a file should be excluded based on the exclude rules.
+ *
+ * @param file the filename.
+ * @param excludes list with exclude rules.
+ * @returns true/false based if the file should be excluded or not.
+ */
+const shouldExclude = (file, excludes) => {
+    for (const exclude of excludes) {
+        if (file.endsWith(exclude)) {
+            return true;
+        }
+    }
+    return false;
+};
+exports.shouldExclude = shouldExclude;
+/**
+ * Find all secrets in a given file.
+ *
+ * @param file the file to search for secrets.
+ * @returns a list of secrets.
+ */
+const findSecretsInFile = (file) => {
+    const content = fs_1.default.readFileSync(file, { encoding: 'utf8', flag: 'r' });
+    const secrets = [];
+    for (const match of content.matchAll(/!secret (\w*)/gm)) {
+        secrets.push(match[1]);
+    }
+    return secrets;
+};
+exports.findSecretsInFile = findSecretsInFile;
+/**
+ * Append a secret and it's value to a given file.
+ *
+ * @param file the file for secrets.
+ * @param key the key, the name of the secret.
+ * @param value the value of the secret.
+ */
+const appendSecret = (file, key, value) => {
+    fs_1.default.appendFileSync(file, `${key}: '${value}'\n`, 'utf-8');
+};
+exports.appendSecret = appendSecret;
+/**
+ * Get the file extension from a given filename/path.
+ *
+ * @param file the file.
+ * @returns the extension including a leading period.
+ */
+const getFileExtension = (file) => {
+    return path_1.default.extname(file);
+};
+exports.getFileExtension = getFileExtension;
+
+
+/***/ }),
+
+/***/ 985:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.applyRules = void 0;
+/**
+ * Apply rules on a given secret.
+ *
+ * @param secret The secret.
+ * @param rules The list of rules, the first rule that macthes will be applied.
+ * @param defaultValue a default value, in case no rule is applicable.
+ * @returns a value for the given secret.
+ */
+const applyRules = (secret, rules, defaultValue) => {
+    for (const [rule, value] of Object.entries(rules)) {
+        const regex = new RegExp(rule);
+        if (regex.test(secret)) {
+            return value;
+        }
+    }
+    return defaultValue;
+};
+exports.applyRules = applyRules;
+
+
+/***/ }),
+
 /***/ 491:
 /***/ ((module) => {
 
@@ -3079,13 +3070,22 @@ module.exports = require("util");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(109);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * The entrypoint for the action.
+ */
+const main_1 = __nccwpck_require__(399);
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+(0, main_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map

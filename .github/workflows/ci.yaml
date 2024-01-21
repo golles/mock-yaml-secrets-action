@@ -1,25 +1,46 @@
-name: CI
+name: Continuous Integration
+
 on:
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  test-typescript:
+    name: TypeScript Tests
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source code
+      - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
 
-      - name: Install
-        run: |
-          npm install
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
 
-      - name: Build, check and test
-        run: |
-          npm run all
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check Format
+        id: npm-format-check
+        run: npm run format:check
+
+      - name: Lint
+        id: npm-lint
+        run: npm run lint
+
+      - name: Test
+        id: npm-ci-test
+        run: npm run ci-test
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
@@ -33,13 +54,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  test:
+  test-action:
+    name: GitHub Actions Test
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source code
+      - name: Checkout
+        id: checkout
         uses: actions/checkout@v4
 
-      - name: Test the action
+      - name: Test Local Action
         uses: ./
         with:
           configFile: __tests__/data/config/all.json

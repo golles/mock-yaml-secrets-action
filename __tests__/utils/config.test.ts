@@ -1,13 +1,14 @@
-import {defaultConfig, readConfig} from '../../src/utils/config'
-import {describe, expect, test} from '@jest/globals'
+import { defaultConfig, readConfig } from '../../src/utils/config'
+import { describe, expect, test } from '@jest/globals'
 
 describe('Config tests', () => {
-  test('test minimal config', () => {
+  test('minimal config', () => {
     expect(readConfig('__tests__/data/config/minimal.json')).toEqual(
       defaultConfig
     )
   })
-  test('test config', () => {
+
+  test('config', () => {
     const config = {
       directory: './',
       excludePaths: ['.git', '.github', '.vscode'],

@@ -1,15 +1,54 @@
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
-import {test} from '@jest/globals'
+/**
+ * Unit tests for the action's main functionality, src/main.ts
+ *
+ * These should be run as if the action was called from a workflow.
+ * Specifically, the inputs listed in `action.yml` should be set as environment
+ * variables following the pattern `INPUT_<INPUT_NAME>`.
+ */
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_CONFIGFILE'] = '__tests__/data/config/all.json'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
-  console.log(cp.execFileSync(np, [ip], options).toString())
+import * as core from '@actions/core'
+import * as main from '../src/main'
+
+// Mock the action's main function
+const runMock = jest.spyOn(main, 'run')
+
+// Mock the GitHub Actions core library
+let debugMock: jest.SpyInstance
+let errorMock: jest.SpyInstance
+let getInputMock: jest.SpyInstance
+
+describe('action', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+
+    debugMock = jest.spyOn(core, 'debug').mockImplementation()
+    errorMock = jest.spyOn(core, 'error').mockImplementation()
+    getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
+  })
+
+  it('sets the configFile output', async () => {
+    // Set the action's inputs as return values from core.getInput()
+    getInputMock.mockImplementation((name: string): string => {
+      switch (name) {
+        case 'configFile':
+          return '__tests__/data/config/all.json'
+        default:
+          return ''
+      }
+    })
+
+    await main.run()
+    expect(runMock).toHaveReturned()
+
+    // Verify that all of the core library functions were called correctly
+    expect(debugMock).toHaveBeenNthCalledWith(
+      1,
+      'Starting mock-yaml-secrets-action version 1.0.0'
+    )
+    expect(debugMock).toHaveBeenNthCalledWith(
+      2,
+      'Attempting to read config file: __tests__/data/config/all.json'
+    )
+    expect(errorMock).not.toHaveBeenCalled()
+  })
 })
