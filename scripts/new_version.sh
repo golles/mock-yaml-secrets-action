@@ -11,15 +11,17 @@ VERSION=$1
 if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     # Update the package version.
     npm version "$VERSION"
+    git tag -fa -m "" "v${VERSION}"
 
     read -p "Want to push(y/n)? " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         # Change major tag.
         MAJOR="${VERSION%%.*}"
+        git tag -d "v${MAJOR}"
         git tag -fa -m "" "v${MAJOR}"
 
-        git push --tags
+        git push -f --tags
     else
         git tag -d "v${VERSION}"
         git reset --hard HEAD~1
