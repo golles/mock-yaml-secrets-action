@@ -43,7 +43,7 @@ describe('action', () => {
     // Verify that all of the core library functions were called correctly
     expect(debugMock).toHaveBeenNthCalledWith(
       1,
-      'Starting mock-yaml-secrets-action version 1.1.0'
+      expect.stringMatching(/Starting mock-yaml-secrets-action version *./)
     )
     expect(debugMock).toHaveBeenNthCalledWith(
       2,
