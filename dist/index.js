@@ -2765,10 +2765,6 @@ async function run() {
     }
 }
 exports.run = run;
-/**
- * Main entry point.
- */
-run();
 
 
 /***/ }),
