@@ -64,7 +64,7 @@ an empty object `{}` for defaults. In the example above the file is located at
 | ------------- | ---------------- | -------------------------------------------------------- |
 | directory     | `'./'`           | The directory to scan recursively for `YAML` files       |
 | excludePaths  | `[]`             | Paths you want to exclude, eg. `[".github", ".vscode"]`  |
-| secretFile    | `'secrets.yaml'` | Output secret file name                                  |
+| secretFile    | `'secrets.yaml'` | Output secret filename                                   |
 | defaultValue  | `'value0123'`    | The default value for secrets that don't match any rules |
 | rules         | `{}`             | See below                                                |
 
