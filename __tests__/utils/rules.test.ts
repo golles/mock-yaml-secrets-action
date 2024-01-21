@@ -15,10 +15,8 @@ describe('Rules tests', () => {
   })
 
   test('for all tokens', () => {
-    const rules = { 'service.*_token': 'y4783huiefqwnj' }
-    expect(applyRules('service_foo_token', rules, 'default')).toEqual(
-      'y4783huiefqwnj'
-    )
+    const rules = { 'service.*_token': 'hgfcsjk' }
+    expect(applyRules('service_foo_token', rules, 'default')).toEqual('hgfcsjk')
   })
 
   test('for multiple token rules', () => {
