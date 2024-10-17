@@ -33,10 +33,8 @@ export const getFilesWithExtension = (
 
       if (fs.statSync(absolute).isDirectory()) {
         getFiles(absolute, ext)
-      } else {
-        if (ext.includes(getFileExtension(absolute))) {
-          files.push(absolute)
-        }
+      } else if (ext.includes(getFileExtension(absolute))) {
+        files.push(absolute)
       }
     }
   }
