@@ -69,3 +69,9 @@ jobs:
         uses: ./
         with:
           configFile: __tests__/data/config/all.json
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: secrets
+          path: secrets.yaml
