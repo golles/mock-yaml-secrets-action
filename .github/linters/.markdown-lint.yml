@@ -6,6 +6,13 @@ MD004:
 MD029:
   style: one
 
-MD013:
-  code_blocks: true
-  tables: false
+# Spaces after list markers
+MD030:
+  ul_single: 1
+  ol_single: 1
+  ul_multi: 1
+  ol_multi: 1
+
+# Code block style
+MD046:
+  style: fenced
