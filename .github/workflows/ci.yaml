@@ -69,7 +69,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          configFile: __tests__/data/config/all.json
 
       - name: Print Output
         id: output
