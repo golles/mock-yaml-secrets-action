@@ -25775,10 +25775,8 @@ const getFilesWithExtension = (directory, extension, excludePaths) => {
             if (fs_1.default.statSync(absolute).isDirectory()) {
                 getFiles(absolute, ext);
             }
-            else {
-                if (ext.includes((0, exports.getFileExtension)(absolute))) {
-                    files.push(absolute);
-                }
+            else if (ext.includes((0, exports.getFileExtension)(absolute))) {
+                files.push(absolute);
             }
         }
     };
