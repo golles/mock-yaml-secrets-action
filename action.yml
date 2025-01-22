@@ -1,10 +1,12 @@
-name: 'mock-yaml-secrets-action'
-description: 'Scan all yaml files for secrets and make a mock file for testing'
-author: 'golles'
+name: mock-yaml-secrets-action
+description: Scan all yaml files for secrets and make a mock file for testing
+author: golles
+
 inputs:
   configFile:
     required: true
-    description: 'config file location'
+    description: config file location
+
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: node20
+  main: dist/index.js
