@@ -3,9 +3,9 @@ import {
   appendSecret,
   getFilesWithExtension,
   findSecretsInFile
-} from './utils/files'
-import { readConfig } from './utils/config'
-import { applyRules } from './utils/rules'
+} from './utils/files.js'
+import { readConfig } from './utils/config.js'
+import { applyRules } from './utils/rules.js'
 
 /**
  * Action run function.

@@ -1,54 +1,73 @@
 /**
  * Unit tests for the action's main functionality, src/main.ts
  *
- * These should be run as if the action was called from a workflow.
- * Specifically, the inputs listed in `action.yml` should be set as environment
- * variables following the pattern `INPUT_<INPUT_NAME>`.
+ * To mock dependencies in ESM, you can create fixtures that export mock
+ * functions and objects. For example, the core module is mocked in this test,
+ * so that the actual '@actions/core' module is not imported.
  */
+import { jest } from '@jest/globals'
+import * as core from '../__fixtures__/core.js'
 
-import * as core from '@actions/core'
-import * as main from '../src/main'
+// Mocks should be declared before the module being tested is imported.
+jest.unstable_mockModule('@actions/core', () => core)
 
-// Mock the action's main function
-const runMock = jest.spyOn(main, 'run')
+// The module being tested should be imported dynamically. This ensures that the
+// mocks are used in place of any actual dependencies.
+const { run } = await import('../src/main.js')
 
-// Mock the GitHub Actions core library
-let debugMock: jest.SpyInstance
-let errorMock: jest.SpyInstance
-let getInputMock: jest.SpyInstance
-
-describe('action', () => {
+describe('main.ts', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    // Set the action's inputs as return values from core.getInput().
+    core.getInput.mockImplementation(() => '__tests__/data/config/all.json')
+  })
 
-    debugMock = jest.spyOn(core, 'debug').mockImplementation()
-    errorMock = jest.spyOn(core, 'error').mockImplementation()
-    getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   it('sets the configFile output', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation((name: string): string => {
-      switch (name) {
-        case 'configFile':
-          return '__tests__/data/config/all.json'
-        default:
-          return ''
-      }
-    })
-
-    await main.run()
-    expect(runMock).toHaveReturned()
+    await run()
 
     // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(
+    expect(core.debug).toHaveBeenNthCalledWith(
       1,
       expect.stringMatching(/Starting mock-yaml-secrets-action version *./)
     )
-    expect(debugMock).toHaveBeenNthCalledWith(
+    expect(core.debug).toHaveBeenNthCalledWith(
       2,
       'Attempting to read config file: __tests__/data/config/all.json'
     )
-    expect(errorMock).not.toHaveBeenCalled()
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 57 yaml files')
+    expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 7 secrets')
+    expect(core.debug).toHaveBeenNthCalledWith(
+      5,
+      'Giving encryption_key value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      6,
+      'Giving host1_ip value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      7,
+      'Giving host1_user value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      8,
+      'Giving host1_password value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      9,
+      'Giving host2_ip value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      10,
+      'Giving host2_user value value0123'
+    )
+    expect(core.debug).toHaveBeenNthCalledWith(
+      11,
+      'Giving host2_password value value0123'
+    )
+
+    expect(core.error).not.toHaveBeenCalled()
   })
 })
