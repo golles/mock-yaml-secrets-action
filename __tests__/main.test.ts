@@ -7,6 +7,7 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
+import * as fs from 'fs'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
@@ -17,6 +18,9 @@ const { run } = await import('../src/main.js')
 
 describe('main.ts', () => {
   beforeEach(() => {
+    // Remove any previously generated secrets.yaml file.
+    fs.unlinkSync('secrets.yaml')
+
     // Set the action's inputs as return values from core.getInput().
     core.getInput.mockImplementation(() => '__tests__/data/config/all.json')
   })
@@ -37,7 +41,7 @@ describe('main.ts', () => {
       2,
       'Attempting to read config file: __tests__/data/config/all.json'
     )
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 57 yaml files')
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 56 yaml files')
     expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 7 secrets')
     expect(core.debug).toHaveBeenNthCalledWith(
       5,
