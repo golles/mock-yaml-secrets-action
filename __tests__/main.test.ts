@@ -19,7 +19,9 @@ const { run } = await import('../src/main.js')
 describe('main.ts', () => {
   beforeEach(() => {
     // Remove any previously generated secrets.yaml file.
-    fs.unlinkSync('secrets.yaml')
+    if (fs.existsSync('secrets.yaml')) {
+      fs.unlinkSync('secrets.yaml')
+    }
 
     // Set the action's inputs as return values from core.getInput().
     core.getInput.mockImplementation(() => '__tests__/data/config/all.json')
