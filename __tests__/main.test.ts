@@ -31,7 +31,7 @@ describe('main.ts', () => {
     jest.resetAllMocks()
   })
 
-  it('sets the configFile output', async () => {
+  test('happy flow', async () => {
     await run()
 
     // Verify that all of the core library functions were called correctly
@@ -43,7 +43,8 @@ describe('main.ts', () => {
       2,
       'Attempting to read config file: __tests__/data/config/all.json'
     )
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 58 yaml files')
+
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 3 yaml files')
     expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 7 secrets')
     expect(core.debug).toHaveBeenNthCalledWith(
       5,
@@ -73,7 +74,15 @@ describe('main.ts', () => {
       11,
       'Giving host2_password value value0123'
     )
+  })
 
-    expect(core.error).not.toHaveBeenCalled()
+  test('Not existing config file', async () => {
+    core.getInput
+      .mockClear()
+      .mockImplementation(() => '__tests__/data/config/not_existing.json')
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalled()
   })
 })

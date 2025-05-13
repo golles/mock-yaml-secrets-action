@@ -27346,6 +27346,9 @@ const defaultConfig = {
  * @returns config object
  */
 const readConfig = (file) => {
+    if (!fs.existsSync(file)) {
+        throw new Error(`Config file ${file} does not exist`);
+    }
     const jsonString = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' });
     const jsonObject = JSON.parse(jsonString);
     return { ...defaultConfig, ...jsonObject };
