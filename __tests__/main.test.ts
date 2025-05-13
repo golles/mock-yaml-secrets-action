@@ -44,8 +44,8 @@ describe('main.ts', () => {
       'Attempting to read config file: __tests__/data/config/all.json'
     )
 
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 3 yaml files')
-    expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 7 secrets')
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 4 yaml files')
+    expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 9 secrets')
     expect(core.debug).toHaveBeenNthCalledWith(
       5,
       'Giving encryption_key value value0123'

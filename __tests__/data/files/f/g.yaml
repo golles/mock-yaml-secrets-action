@@ -1,0 +1,14 @@
+config:
+  version: 1.0
+  enabled: true
+  settings:
+    retries: 3
+    timeout: 30
+  metadata:
+    author: 'John Doe'
+    created: '2023-10-01'
+  features:
+    - key: password
+      value:: !secret password
+    - key: credit_card
+      value:: !secret credit_card
