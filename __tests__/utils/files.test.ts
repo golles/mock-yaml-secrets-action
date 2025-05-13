@@ -16,14 +16,14 @@ describe('Files tests', () => {
   test('getFilesWithExtension with yaml files', () => {
     expect(
       getFilesWithExtension('__tests__/data/files', ['.yaml'], []).length
-    ).toBe(2)
+    ).toBe(3)
   })
 
   test('getFilesWithExtension with yaml/yml files', () => {
     expect(
       getFilesWithExtension('__tests__/data/files', ['.yaml', '.yml'], [])
         .length
-    ).toBe(3)
+    ).toBe(4)
   })
 
   test('getFilesWithExtension with yaml/yml files, without b.yaml', () => {
@@ -33,7 +33,7 @@ describe('Files tests', () => {
         ['.yaml', '.yml'],
         ['b.yaml']
       ).length
-    ).toBe(2)
+    ).toBe(3)
   })
 
   test('shouldExclude', () => {
