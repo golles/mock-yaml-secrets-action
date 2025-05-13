@@ -10,7 +10,7 @@ describe('Config tests', () => {
 
   test('config', () => {
     const config = {
-      directory: './',
+      directory: './__tests__/data/files/',
       excludePaths: ['.git', '.github', '.vscode'],
       secretFile: 'secrets.yaml',
       defaultValue: 'value0123',
@@ -19,5 +19,11 @@ describe('Config tests', () => {
       }
     }
     expect(readConfig('__tests__/data/config/all.json')).toEqual(config)
+  })
+
+  test('config with non-existing file', () => {
+    expect(() => readConfig('__tests__/data/config/doesnotexist.json')).toThrow(
+      'Config file __tests__/data/config/doesnotexist.json does not exist'
+    )
   })
 })
