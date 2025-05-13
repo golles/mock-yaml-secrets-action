@@ -43,7 +43,7 @@ describe('main.ts', () => {
       2,
       'Attempting to read config file: __tests__/data/config/all.json'
     )
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 56 yaml files')
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Found 58 yaml files')
     expect(core.debug).toHaveBeenNthCalledWith(4, 'Found 7 secrets')
     expect(core.debug).toHaveBeenNthCalledWith(
       5,
