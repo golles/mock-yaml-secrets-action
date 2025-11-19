@@ -83,6 +83,21 @@ describe('main.ts', () => {
 
     await run()
 
-    expect(core.setFailed).toHaveBeenCalled()
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'Config file __tests__/data/config/not_existing.json does not exist'
+    )
+  })
+
+  test('Non-Error exception handling', async () => {
+    // Create a spy on core.getInput that throws a non-Error
+    core.getInput.mockClear().mockImplementation(() => {
+      throw 'This is a string error, not an Error object'
+    })
+
+    await run()
+
+    // When a non-Error is thrown, core.setFailed should not be called
+    // because the condition `error instanceof Error` will be false
+    expect(core.setFailed).not.toHaveBeenCalled()
   })
 })
