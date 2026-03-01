@@ -2,7 +2,7 @@
  * Apply rules on a given secret.
  *
  * @param secret The secret.
- * @param rules The list of rules, the first rule that macthes will be applied.
+ * @param rules The list of rules, the first rule that matches will be applied.
  * @param defaultValue a default value, in case no rule is applicable.
  * @returns a value for the given secret.
  */
