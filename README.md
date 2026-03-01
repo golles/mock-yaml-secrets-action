@@ -60,7 +60,7 @@ Configuration is provided in a `JSON` file, the file is required but can contain
 an empty object `{}` for defaults. In the example above the file is located at
 `.github/workflows/mock-secrets-config.json`.
 
-| Configuration | Default value    | Explaination                                             |
+| Configuration | Default value    | Explanation                                              |
 | ------------- | ---------------- | -------------------------------------------------------- |
 | directory     | `'./'`           | The directory to scan recursively for `YAML` files       |
 | excludePaths  | `[]`             | Paths you want to exclude, eg. `[".github", ".vscode"]`  |
